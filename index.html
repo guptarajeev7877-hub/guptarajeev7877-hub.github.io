@@ -85,6 +85,16 @@
 
   /* ---------- hero ---------- */
   .hero{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:80px 0 60px}
+  .hero-grid{display:grid;grid-template-columns:1.35fr 1fr;align-items:center;gap:30px}
+  .avatar{position:relative;width:min(300px,60vw);aspect-ratio:1;margin:auto;border-radius:50%;animation:float 6s ease-in-out infinite}
+  .avatar::before{content:"";position:absolute;inset:-7px;border-radius:50%;
+    background:conic-gradient(var(--red),var(--orange),var(--violet),var(--cyan),var(--red));animation:rot 4s linear infinite;
+    box-shadow:0 0 50px rgba(255,46,77,.55),0 0 90px rgba(139,92,255,.3)}
+  .avatar img{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;object-fit:cover;border:4px solid #05070d;display:block}
+  .avatar .badge{position:absolute;z-index:2;bottom:8%;right:-4%;font-size:12px;padding:6px 11px;border-radius:999px;color:#fff;
+    background:linear-gradient(120deg,var(--red),var(--orange));box-shadow:0 6px 20px -4px rgba(255,46,77,.8)}
+  @keyframes rot{to{transform:rotate(360deg)}}
+  @keyframes float{50%{transform:translateY(-12px)}}
   .tag{display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--cyan);border:1px solid var(--line);
     background:var(--glass);backdrop-filter:blur(8px);padding:7px 14px;border-radius:999px;width:fit-content}
   .dot{width:8px;height:8px;border-radius:50%;background:#30f39a;box-shadow:0 0 12px #30f39a;animation:pulse 2s infinite}
@@ -166,6 +176,9 @@
   @media(max-width:760px){
     .stats{grid-template-columns:repeat(2,1fr)}
     .skills{grid-template-columns:1fr}
+    .hero-grid{grid-template-columns:1fr}
+    .avatar{order:-1;width:150px;margin:0 0 6px}
+    .avatar .badge{font-size:11px;right:-30%}
     section{padding:64px 0}
     .about{padding:24px;font-size:17px}
   }
@@ -185,6 +198,8 @@
 <div class="wrap">
 
   <header class="hero">
+   <div class="hero-grid">
+   <div>
     <span class="tag mono"><span class="dot"></span> identity.status = "online"</span>
     <h1>Rajeev Kumar<br>Gupta</h1>
     <p class="typed mono" aria-hidden="true"><span id="typed"></span><span class="caret"></span></p>
@@ -196,6 +211,12 @@
       <a class="btn" href="https://guptarajeev7877-hub.github.io/portfolio/">Case studies</a>
       <a class="btn" href="mailto:guptarajeev7873@gmail.com">Email me</a>
     </nav>
+   </div>
+   <div class="avatar" id="avatar">
+     <img src="photo.jpg" alt="Rajeev Kumar Gupta, IAM Engineer from Kolkata" width="640" height="640">
+     <span class="badge mono">IAM · SME</span>
+   </div>
+   </div>
     <div class="scroll mono">SCROLL ↓</div>
   </header>
 
@@ -301,14 +322,14 @@
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---- 3D rotating "identity network" sphere ---- */
-  var c = document.getElementById('net'), x = c.getContext('2d');
+  var c = document.getElementById('net'), x = c.getContext('2d'), av = document.getElementById('avatar');
   var W, H, dpr, R, pts = [], N;
   var rotY = 0, rotX = 0.3, tX = 0, tY = 0;
   function size(){
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = innerWidth; H = innerHeight;
     c.width = W * dpr; c.height = H * dpr; x.setTransform(dpr,0,0,dpr,0,0);
-    R = Math.min(W, H) * (W < 760 ? 0.42 : 0.36);
+    R = W < 760 ? Math.min(W * 0.44, 190) : Math.min(W, H) * 0.38;
     N = W < 760 ? 110 : 190;
     pts = [];
     var g = Math.PI * (3 - Math.sqrt(5));
@@ -325,7 +346,7 @@
     rotY += reduce ? 0 : 0.0018;
     var ry = rotY + tY, rx = 0.3 + tX;
     var cy = Math.cos(ry), sy = Math.sin(ry), cx = Math.cos(rx), sx = Math.sin(rx);
-    var ox = W * (W < 760 ? .5 : .68), oy = H * .45, scrollFade = Math.max(.25, 1 - scrollY / (H * 1.2));
+    var ar = av.getBoundingClientRect(), ox = ar.left + ar.width/2, oy = ar.top + ar.height/2, scrollFade = Math.max(.25, 1 - scrollY / (H * 1.2));
     x.clearRect(0, 0, W, H);
     var P = [];
     for (var i = 0; i < pts.length; i++){
